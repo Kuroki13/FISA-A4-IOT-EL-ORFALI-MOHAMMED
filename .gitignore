@@ -1,0 +1,17 @@
+# Fichiers compilés Arduino (inutiles sur le cloud)
+*.hex
+*.elf
+*.bin
+
+# Fichiers systèmes Windows
+.DS_Store
+Thumbs.db
+
+# Fichiers de configuration (Mots de passe)
+secrets.h
+config.json
+.env
+
+# Node-RED
+.node-red/
+node_modules/
