@@ -3,7 +3,6 @@
 ![Status](https://img.shields.io/badge/Status-Development-yellow?style=flat-square) 
 ![Platform](https://img.shields.io/badge/Hardware-Arduino%20%7C%20ESP32-blue?style=flat-square) 
 ![Middleware](https://img.shields.io/badge/Middleware-NodeRED%20%7C%20MQTT-green?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-lightgrey?style=flat-square)
 
 
 > **Groupe 1 :** Développement et qualification d'un sous-système de contrôle environnemental (ECLSS) pour station spatiale.
