@@ -156,7 +156,7 @@ bool alarmeActivee = false;
 }
 
 void loop(){
-	float raw;
+	float raw = 0.0;
 	// -- Simulation --
 	if (mode_Auto){
 		GenererPressionSimulee();
