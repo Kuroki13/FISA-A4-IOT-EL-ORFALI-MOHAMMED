@@ -4,16 +4,13 @@
 #include "Sensor_Pressure.h"
 
 
-
 const char* ssid     = "R4-GRP1_AP";
 const char* password = "12345678";
 
-const char* mqtt_server = "192.168.4.2";
+const char* mqtt_server = "192.168.4.67";
 const uint16_t mqtt_port = 1883;
-const char* mqtt_topic  = "test";
+bool mqttconnexion = false;
 
-WiFiClient wifiClient;
-PubSubClient mqttClient(wifiClient);
 
 // Topics
 const char* TOPIC_DATA = "eclss/salle1/pression";
@@ -22,32 +19,12 @@ const char* TOPIC_DATA = "eclss/salle1/pression";
 unsigned long lastMsgTime = 0;
 const long interval = 2000; // Envoi toutes les 2 secondes
 
-
-void reconnect() {
-  // Boucle jusqu'à connexion
-  while (!mqttClient.connected()) {
-    Serial.print("Connexion MQTT...");
-    String clientId = "ECLSS_Client_";
-    
-    if (mqttClient.connect(clientId.c_str())) {
-      Serial.println("Connecte !");
-      // On peut envoyer un message de bonjour
-      mqttClient.publish("eclss/status", " ECLSS en ligne");
-    } else {
-      Serial.print("Echec, rc=");
-      Serial.print(mqttClient.state());
-      Serial.println(" nouvel essai dans 5s");
-      delay(5000);
-    }
-  }
-}
+WiFiClient wifiClient;
+PubSubClient mqttClient(wifiClient);
 
 void setup() {
   Serial.begin(9600);
   delay(2000);
-
-  // Initialisation du capteur de pression
-  initCapteurPression();
   
   Serial.println("=== UNO R4 #2 : Client MQTT ===");
   
@@ -67,57 +44,56 @@ void setup() {
   
   // Configuration MQTT
   mqttClient.setServer(mqtt_server, mqtt_port);
-  
-  // Connexion MQTT
+}
+
+bool connexionMQTT(){
+	
   String clientId = "UNO_R4_Client";
   if (mqttClient.connect(clientId.c_str())) {
     Serial.println("MQTT connecté !");
-
-    // Envoi test sur topic "test"
-    mqttClient.publish(mqtt_topic, "zobi");
-    mqttClient.disconnect();
-    Serial.println("Message '21' envoyé sur topic 'test'");
   } else {
     Serial.println("MQTT échec");
+	return false;
   }
 }
+
+void sendMqttMessage(){
+	// Envoi test sur topic "test"
+	mqttClient.publish(TOPIC_DATA, "imldkjmlqjfd");
+	mqttClient.disconnect();
+	Serial.println("Message '21' envoyé sur topic 'test'");
+  }
+
+  
+void sendPressure(){
+
+	// Garder MQTT actif
+	mqttClient.loop();
+
+	// Envoie sans délai
+	unsigned long now = millis();
+	if (now - lastMsgTime > interval) {
+		lastMsgTime = now;
+
+		// Lecture de la pression actuelle
+		float pression = getDataPression();
+		
+		char buffer[10];  // Taille suffisante pour "1234.56\0"
+		dtostrf(pression, 6, 2, buffer);  // 6 chiffres total, 2 décimales
+		Serial.print("Envoi MQTT: ");
+		Serial.println(buffer);
+		mqttClient.publish(TOPIC_DATA, buffer);
+
+	}
+}
+
+
+
 
 void loop() {
-  delay(10000);
-  Serial.println("Ping " + WiFi.localIP().toString());
-
-  if (!mqttClient.connected()){
-	reconnect();
-  }
-
-  // Garder MQTT actif
-  mqttClient.loop();
-
-  // Envoie sans délai
-  unsigned long now = millis();
-  if (now - lastMsgTime > interval) {
-	lastMsgTime = now;
-
-  // Lecture de la pression actuelle
-  float pression = getDataPression();
-
-  // Affichage debug
-
-  Serial.print("Envoi pression : ");
-  Serial.print(pression);
-  Serial.println("hPa");
-  Serial.println("---------------------");
-
-  // 3. Création du Payload JSON
-    // Format : {"valeur": 1013.25, "unit": "hPa"}
-    String payload = "{\"valeur\":";
-    payload += String(pression, 2); // 2 décimales
-    payload += ", \"unit\":\"hPa\"}";
-
-    // 4. Envoi MQTT
-    Serial.print("Envoi MQTT: ");
-    Serial.println(payload);
-    mqttClient.publish(TOPIC_DATA, payload.c_str());
-
-}
+	if(connexionMQTT()){
+		sendPressure();
+	}
+    delay(1000);
+    Serial.println("Ping " + WiFi.localIP().toString());
 }
