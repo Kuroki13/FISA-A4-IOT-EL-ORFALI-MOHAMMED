@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <WiFiS3.h>
 #include <PubSubClient.h>
+#include "Sensor_Pressure.h"
+
 
 
 const char* ssid     = "R4-GRP1_AP";
@@ -53,4 +55,5 @@ void setup() {
 void loop() {
   delay(10000);
   Serial.println("Ping " + WiFi.localIP().toString());
+  float pression = getDataPression();
 }
