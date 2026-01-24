@@ -4,17 +4,17 @@
 #include "Sensor_Pressure.h"
 #include "Sensor_TempHum.h"
 
-const char *ssid = "TP-Link_PFD-Metasys-V13";
-const char *password = "10596289";
+const char *ssid = "";
+const char *password = "";
 
-const char *mqtt_server = "192.168.0.101";
+const char *mqtt_server = "192.168.0.157";
 const uint16_t mqtt_port = 1883;
 bool isMqttConnected = false;
 
 // Topics
-const char *TOPIC_PRESSION = "eclss/salle1/pression";
-const char *TOPIC_TEMPERATURE = "eclss/salle1/temperature";
-const char *TOPIC_HUMIDITE = "eclss/salle1/humidite";
+const char *TOPIC_PRESSION = "eclss/pression";
+const char *TOPIC_TEMPERATURE = "eclss/temperature";
+const char *TOPIC_HUMIDITE = "eclss/humidite";
 
 uint8_t MAC_ADDRESS[6];
 char STR_MAC_ADDRESS[18];
