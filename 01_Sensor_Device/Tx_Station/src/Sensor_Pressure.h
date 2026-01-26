@@ -22,7 +22,7 @@ int lireValeurBrutePression()
 
 /**
  * @brief Simulate pressure with potentiometer 
- * @return Float : pressure level in Pa
+ * @return Float : pressure level in hPa
  * @param None
 */
 float getPress()
@@ -30,7 +30,7 @@ float getPress()
 	float valeurBrute = lireValeurBrutePression();
 	// Conversion (simulateValue / step) * maxNeeded;
 	float pressionActuelle = (valeurBrute / 1023.0) * 1200.0;
-	Serial.print("Pression actuelle (hPa): ");
+	Serial.print("Actual pressure (hPa): ");
 	Serial.println(pressionActuelle);
 
 	return pressionActuelle;

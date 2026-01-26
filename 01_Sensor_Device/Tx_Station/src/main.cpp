@@ -3,6 +3,7 @@
 #include <PubSubClient.h>
 #include "Sensor_Pressure.h"
 #include "Sensor_TempHum.h"
+#include "Sensor_AirQual.h"
 #include "secrets.h"
 
 bool isMqttConnected = false;
@@ -16,7 +17,7 @@ PubSubClient mqttClient(wifiClient);
 void setup()
 {
 	Serial.begin(9600);
-	delay(50);
+	while (!Serial);
 	Serial.println("------------------------");
 	initBme280();
 
@@ -106,6 +107,7 @@ void loop()
 		sendMQTTMessage(getTemp(), TOPIC_TEMPERATURE);
 		sendMQTTMessage(getHum(), TOPIC_HUMIDITE);
 		sendMQTTMessage(getPress(), TOPIC_PRESSION);
+		sendMQTTMessage(getAirQual(), TOPIC_AIR_QUAL);
 		delay(5000);
 	}
 }
