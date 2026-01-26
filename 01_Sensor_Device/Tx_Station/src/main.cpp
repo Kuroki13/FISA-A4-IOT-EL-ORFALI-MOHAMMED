@@ -103,9 +103,9 @@ void loop()
 	if (isMqttConnected)
 	{
 		Serial.println("------------------------");
-		sendMQTTMessage(getPress(), TOPIC_PRESSION);
 		sendMQTTMessage(getTemp(), TOPIC_TEMPERATURE);
 		sendMQTTMessage(getHum(), TOPIC_HUMIDITE);
+		sendMQTTMessage(getPress(), TOPIC_PRESSION);
 		delay(5000);
 	}
 }
