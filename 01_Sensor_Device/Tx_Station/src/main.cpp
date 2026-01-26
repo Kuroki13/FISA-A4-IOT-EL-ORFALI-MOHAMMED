@@ -3,18 +3,9 @@
 #include <PubSubClient.h>
 #include "Sensor_Pressure.h"
 #include "Sensor_TempHum.h"
+#include "secrets.h"
 
-const char *ssid = "";
-const char *password = "";
-
-const char *mqtt_server = "192.168.0.157";
-const uint16_t mqtt_port = 1883;
 bool isMqttConnected = false;
-
-// Topics
-const char *TOPIC_PRESSION = "eclss/pression";
-const char *TOPIC_TEMPERATURE = "eclss/temperature";
-const char *TOPIC_HUMIDITE = "eclss/humidite";
 
 uint8_t MAC_ADDRESS[6];
 char STR_MAC_ADDRESS[18];
@@ -25,25 +16,31 @@ PubSubClient mqttClient(wifiClient);
 void setup()
 {
 	Serial.begin(9600);
-	delay(1000);
+	delay(50);
+	Serial.println("------------------------");
 	initBme280();
-
-	Serial.println("=== UNO R4 #2 : Client MQTT ===");
 
 	// Connexion WiFi
 	int status = WL_IDLE_STATUS;
 	while (status != WL_CONNECTED)
 	{
-		Serial.print("Connexion à ");
-		Serial.println(ssid);
+		Serial.print("Connexion to ");
+		Serial.println(WIFI_SSID);
 
-		status = WiFi.begin(ssid, password);
-		Serial.print("status=");
+		status = WiFi.begin(WIFI_SSID, WIFI_PASS);
+		Serial.print("Status = ");
 		Serial.println(status);
-		delay(3000);
+		if(status != WL_CONNECTED) {
+			Serial.println("WiFi not connected, check the modem!");
+			delay(5000);
+			Serial.println("Trying to reconnect to the WiFi ...");
+		}
 	}
 
-	Serial.println("WiFi connecté ! IP : " + WiFi.localIP().toString());
+	while (WiFi.localIP() == INADDR_NONE) delay(100);
+
+	Serial.println("WiFi connected!");
+	Serial.println("IP : " + WiFi.localIP().toString());
 
 	WiFi.macAddress(MAC_ADDRESS);
 	snprintf(STR_MAC_ADDRESS, sizeof(STR_MAC_ADDRESS),"%02X:%02X:%02X:%02X:%02X:%02X",MAC_ADDRESS[0], MAC_ADDRESS[1], MAC_ADDRESS[2], MAC_ADDRESS[3], MAC_ADDRESS[4], MAC_ADDRESS[5]);
@@ -52,13 +49,13 @@ void setup()
 	Serial.println(STR_MAC_ADDRESS);
 	
 	// Configuration MQTT
-	mqttClient.setServer(mqtt_server, mqtt_port);
+	mqttClient.setServer(MQTT_SRV_ID, MQTT_SRV_PORT);
 }
 
 void connexionMQTT()
 {
 
-	char clientId[23];
+	char clientId[32];
 	snprintf(clientId,sizeof(clientId),"UNO_R4_Client_%s}",STR_MAC_ADDRESS);
 
 	if (mqttClient.connect(clientId))
@@ -71,6 +68,7 @@ void connexionMQTT()
 	{
 		Serial.println("MQTT échec");
 		isMqttConnected = false;
+		delay(5000);
 	}
 }
 
@@ -104,10 +102,10 @@ void loop()
 	mqttClient.loop();
 	if (isMqttConnected)
 	{
-		sendMQTTMessage(getDataPression(), TOPIC_PRESSION);
+		Serial.println("------------------------");
+		sendMQTTMessage(getPress(), TOPIC_PRESSION);
 		sendMQTTMessage(getTemp(), TOPIC_TEMPERATURE);
 		sendMQTTMessage(getHum(), TOPIC_HUMIDITE);
-		Serial.println("------------------------");
-		delay(1000);
+		delay(5000);
 	}
 }
