@@ -6,15 +6,16 @@ float currentVoltage = 400;
 
 /**
  * @brief Retrieve air quality from air quality sensor
- * @return Int : air quality level in %
+ * @return Float : air quality level in %
  * @param None
 */
 float getAirQual() {
-    int lastVoltage = currentVoltage;
+    float lastVoltage = currentVoltage;
     currentVoltage = analogRead(AIR_QUAL_SENSOR_PIN);
+    float percentVoltage = (currentVoltage/1024) * 100;
 
     Serial.print("Actual air quality (%): ");
-    Serial.print(currentVoltage);
+    Serial.print(percentVoltage);
 
     if (currentVoltage - lastVoltage > 400 || currentVoltage > 700) {
         Serial.println(". High pollution! Force signal active.");
@@ -29,5 +30,5 @@ float getAirQual() {
         Serial.println(". Fresh air.");
     }
 
-    return currentVoltage;
+    return percentVoltage;
 }
