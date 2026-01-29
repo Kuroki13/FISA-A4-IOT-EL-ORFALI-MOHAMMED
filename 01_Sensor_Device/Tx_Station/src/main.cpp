@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFiS3.h>
 #include <PubSubClient.h>
+#include <LiquidCrystal_I2C.h>
 #include "Sensor_Pressure.h"
 #include "Sensor_TempHum.h"
 #include "Sensor_AirQual.h"
@@ -13,6 +14,7 @@ char STR_MAC_ADDRESS[18];
 
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
+LiquidCrystal_I2C lcd(0x27,16,2);
 
 void setup()
 {
@@ -20,6 +22,8 @@ void setup()
 	while (!Serial);
 	Serial.println("------------------------");
 	initBme280();
+	lcd.init();
+	lcd.noBacklight();
 
 	// Connexion WiFi
 	int status = WL_IDLE_STATUS;
@@ -103,11 +107,39 @@ void loop()
 	mqttClient.loop();
 	if (isMqttConnected)
 	{
+		lcd.backlight();
 		Serial.println("------------------------");
-		sendMQTTMessage(getTemp(), TOPIC_TEMPERATURE);
-		sendMQTTMessage(getHum(), TOPIC_HUMIDITE);
-		sendMQTTMessage(getPress(), TOPIC_PRESSION);
-		sendMQTTMessage(getAirQual(), TOPIC_AIR_QUAL);
+
+		float temp = getTemp();
+		lcd.setCursor(0,0);
+		lcd.print(temp);
+		lcd.setCursor(5,0);
+		lcd.print("C");
+
+		float hum = getHum();
+		lcd.setCursor(9,0);
+		lcd.print(hum);
+		lcd.setCursor(14,0);
+		lcd.print("%H");
+
+		float press = getPress();
+		lcd.setCursor(0,1);
+		String printPress = String((int) press);
+		while (printPress.length() < 4) printPress = " " + printPress;
+		lcd.print(printPress);
+		lcd.setCursor(4,1);
+		lcd.print("hPa");
+
+		float airQual = getAirQual();
+		lcd.setCursor(9,1);
+		lcd.print(airQual);
+		lcd.setCursor(14,1);
+		lcd.print("%A");
+
+		sendMQTTMessage(temp, TOPIC_TEMPERATURE);
+		sendMQTTMessage(hum, TOPIC_HUMIDITE);
+		sendMQTTMessage(press, TOPIC_PRESSION);
+		sendMQTTMessage(airQual, TOPIC_AIR_QUAL);
 		delay(5000);
 	}
 }
