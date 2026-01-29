@@ -14,7 +14,7 @@ char STR_MAC_ADDRESS[18];
 
 WiFiClient wifiClient;
 PubSubClient mqttClient(wifiClient);
-LiquidCrystal_I2C lcd(0x27,16,2);
+LiquidCrystal_I2C lcd(LCD_SCREEN_I2C,16,2);
 
 void setup()
 {
