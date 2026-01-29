@@ -12,7 +12,7 @@ void initBme280()
 {
     unsigned status;
     // Initialisation capteur BME280 et vérification connexion
-    status = bme.begin(0x76);
+    status = bme.begin(BME280_SENSOR_I2C);
     if (!status)
     {
         while (!status)
@@ -22,7 +22,7 @@ void initBme280()
             Serial.println(bme.sensorID(), 16);
             delay(5000);
             Serial.println("Trying to reconnect to the BME280 sensor ...");
-            status = bme.begin(0x76);
+            status = bme.begin(BME280_SENSOR_I2C);
         }
     }
     Serial.println("BME280 sensor connected!");
