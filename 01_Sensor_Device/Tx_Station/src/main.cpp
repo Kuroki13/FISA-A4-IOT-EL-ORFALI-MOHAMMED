@@ -2,9 +2,7 @@
 #include <WiFiS3.h>
 #include <PubSubClient.h>
 #include <LiquidCrystal_I2C.h>
-#include "Sensor_Pressure.h"
-#include "Sensor_TempHum.h"
-#include "Sensor_AirQual.h"
+#include "Sensors.h"
 #include "secrets.h"
 
 bool isMqttConnected = false;
@@ -24,6 +22,7 @@ void setup()
 	initBme280();
 	lcd.init();
 	lcd.noBacklight();
+	ErrorLEDsInit();
 
 	// Connexion WiFi
 	int status = WL_IDLE_STATUS;
@@ -136,10 +135,19 @@ void loop()
 		lcd.setCursor(14,1);
 		lcd.print("%A");
 
+
 		sendMQTTMessage(temp, TOPIC_TEMPERATURE);
 		sendMQTTMessage(hum, TOPIC_HUMIDITE);
 		sendMQTTMessage(press, TOPIC_PRESSION);
 		sendMQTTMessage(airQual, TOPIC_AIR_QUAL);
+
+		// SERIAL
+		Serial.print("Actual temperature (°C): ");
+		Serial.println(temp);
+		Serial.print("Actual humidity (%): ");
+    	Serial.println(hum);
+		Serial.print("Actual pressure (hPa): ");
+		Serial.println(press);
 		delay(5000);
 	}
 }
