@@ -4,8 +4,13 @@
 #include <LiquidCrystal_I2C.h>
 #include "Sensors.h"
 #include "secrets.h"
+#include "WDT.h"
+
+
 
 bool isMqttConnected = false;
+
+int statusWiFi;
 
 uint8_t MAC_ADDRESS[6];
 char STR_MAC_ADDRESS[18];
@@ -17,6 +22,7 @@ LiquidCrystal_I2C lcd(LCD_SCREEN_I2C,16,2);
 void setup()
 {
 	Serial.begin(9600);
+	WDT.begin(8000);
 	while (!Serial);
 	Serial.println("------------------------");
 	initBme280();
@@ -25,20 +31,21 @@ void setup()
 	ErrorLEDsInit();
 
 	// Connexion WiFi
-	int status = WL_IDLE_STATUS;
-	while (status != WL_CONNECTED)
+	statusWiFi = WL_IDLE_STATUS;
+	while (statusWiFi != WL_CONNECTED)
 	{
 		Serial.print("Connexion to ");
 		Serial.println(WIFI_SSID);
 
-		status = WiFi.begin(WIFI_SSID, WIFI_PASS);
+		statusWiFi = WiFi.begin(WIFI_SSID, WIFI_PASS);
 		Serial.print("Status = ");
-		Serial.println(status);
-		if(status != WL_CONNECTED) {
+		Serial.println(statusWiFi);
+		if(statusWiFi != WL_CONNECTED) {
 			Serial.println("WiFi not connected, check the modem!");
 			delay(5000);
 			Serial.println("Trying to reconnect to the WiFi ...");
 		}
+		CheckErrorsLED(statusWiFi);
 	}
 
 	while (WiFi.localIP() == INADDR_NONE) delay(100);
@@ -54,11 +61,13 @@ void setup()
 	
 	// Configuration MQTT
 	mqttClient.setServer(MQTT_SRV_ID, MQTT_SRV_PORT);
+
+	// Initial LED status
+	CheckErrorsLED(statusWiFi);
 }
 
 void connexionMQTT()
 {
-
 	char clientId[32];
 	snprintf(clientId,sizeof(clientId),"UNO_R4_Client_%s}",STR_MAC_ADDRESS);
 
@@ -99,12 +108,14 @@ void sendMQTTMessage(float data, const char *topic)
 
 void loop()
 {
+	statusWiFi = WiFi.status();
+	WDT.refresh();
 	if (!isMqttConnected)
 	{
 		connexionMQTT();
 	}
 	mqttClient.loop();
-	if (isMqttConnected)
+	if (isMqttConnected && statusWiFi == WL_CONNECTED)
 	{
 		lcd.backlight();
 		Serial.println("------------------------");
@@ -148,6 +159,10 @@ void loop()
     	Serial.println(hum);
 		Serial.print("Actual pressure (hPa): ");
 		Serial.println(press);
-		delay(5000);
+		Serial.println("Actual air quality (%): ");
+		Serial.println(airQual);
+
+		CheckErrorsLED(statusWiFi);
+		delay(2000);
 	}
 }
