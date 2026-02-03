@@ -47,10 +47,10 @@ float getTemp()
     float temp = bme.readTemperature();
 
     // Error checking
-    if (isnan(temp) || temp < -40 || temp > 85)
+    if (isnan(temp) || temp <= 0 || temp >= 180)
     {
         errorTempHum = true;
-        return 0; // valeur fallback
+        return 503; // valeur fallback
     }
 
     errorTempHum = false;
@@ -68,7 +68,7 @@ float getHum()
 
 
     // Error checking
-    if (isnan(hum) || hum < 0 || hum > 100)
+    if (isnan(hum) || hum <= 0 || hum >= 100)
     {
         errorTempHum = true;
         return 0;

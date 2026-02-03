@@ -159,7 +159,7 @@ void loop()
     	Serial.println(hum);
 		Serial.print("Actual pressure (hPa): ");
 		Serial.println(press);
-		Serial.println("Actual air quality (%): ");
+		Serial.print("Actual air quality (%): ");
 		Serial.println(airQual);
 
 		CheckErrorsLED(statusWiFi);
