@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <WiFiS3.h>
 #include <PubSubClient.h>
+#include <ArduinoBearSSL.h>
 #include <LiquidCrystal_I2C.h>
 #include "Sensors.h"
 #include "secrets.h"
@@ -86,25 +87,49 @@ void connexionMQTT()
 	}
 }
 
+void computeHMAC(const char* message, char* outputHex)
+{
+	uint8_t hmac[32]; // SHA-256 = 32 bytes
+
+	br_hmac_context ctx;
+	br_hmac_key_context keyCtx;
+
+	br_hmac_key_init(&keyCtx, &br_sha256_vtable, HMAC_KEY, strlen(HMAC_KEY));
+	br_hmac_init(&ctx, &keyCtx, 0);
+	br_hmac_update(&ctx, message, strlen(message));
+	br_hmac_out(&ctx, hmac);
+
+	// conversion hex
+	for (int i = 0; i < 32; i++){
+		sprintf(outputHex + (i * 2), "%02x", hmac[i]);
+	}
+	outputHex[64] = '\0';
+}
+
+
 void sendMQTTMessage(float data, const char *topic)
 {
-	char message[10];
-	dtostrf(data, 6, 2, message);
+	char dataStr[10];
+	dtostrf(data, 0, 2, dataStr);
 
-	char payload[128];
-	snprintf(payload,sizeof(payload),"{\"id\":\"%s\",\"data\":%s}",STR_MAC_ADDRESS,message);
+	// chaîne à signer
+	char signBuffer[64];
+	snprintf(signBuffer, sizeof(signBuffer),"id=%s&data=%s", STR_MAC_ADDRESS, dataStr);
 
-	Serial.println(payload);
-	
-	// Envoi sur le topic spécifié
+	// HMAC
+	char hmacHex[65];
+	computeHMAC(signBuffer, hmacHex);
+
+	// payload final
+	char payload[160];
+	snprintf(payload, sizeof(payload),
+		"{\"id\":\"%s\",\"data\":%s,\"hmac\":\"%s\"}",
+		STR_MAC_ADDRESS, dataStr, hmacHex);
+
 	mqttClient.publish(topic, payload);
 
-	Serial.print("Message '");
-	Serial.print(message);
-	Serial.print("' envoyé sur topic ");
-	Serial.print(topic);
-	Serial.print(" depuis l'arduino ");
-	Serial.println(STR_MAC_ADDRESS);
+	Serial.println("MQTT envoyé :");
+	Serial.println(payload);
 }
 
 void loop()
