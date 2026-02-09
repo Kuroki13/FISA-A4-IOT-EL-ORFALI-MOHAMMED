@@ -111,6 +111,10 @@ void sendMQTTMessage(float data, const char *topic)
 	char dataStr[10];
 	dtostrf(data, 0, 2, dataStr);
 
+
+	char *p = strstr(dataStr, ".00"); //trim le .00
+	if (p) *p = '\0';
+
 	// chaîne à signer
 	char signBuffer[64];
 	snprintf(signBuffer, sizeof(signBuffer),"id=%s&data=%s", STR_MAC_ADDRESS, dataStr);
