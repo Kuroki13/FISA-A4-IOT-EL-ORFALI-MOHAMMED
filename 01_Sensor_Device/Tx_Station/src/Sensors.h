@@ -1,6 +1,7 @@
 #include <Adafruit_BME280.h>
 #include <Arduino.h>
 #include "secrets.h"
+#include <PID_v1.h>
 
 ///////////////////////////////////////////
 // TEMPERATURE AND HUMIDITY SENSOR (BME280)
@@ -83,44 +84,78 @@ float getHum()
 // PRESSURE SENSOR
 ///////////////////////////////////////////
 
+
+double Setpoint, Input, Output;
+
+// Tuning parameters for PID controller
+double Kp = 2.0, Ki = 5.0, Kd = 1.0;
+double aggKp=4, aggKi=0, aggKd=0;
+double consKp=1, consKi=0.05, consKd=0.25;
+
+PID pressurePID(&Input, &Output, &Setpoint, consKp, consKi, consKd, DIRECT);
+
+
+
 /**
- * @brief Calculate 
- * @return Int : 
+ * @brief Inititalize the pressure sensor 
+ * @return None
  * @param None
 */
-int lireValeurBrutePression()
+void InitPression()
 {
-	long somme = 0;
-	int nombreEchantillons = 10; // On fait la moyenne de 10 lectures
-
-	for (int i = 0; i < nombreEchantillons; i++)
-	{
-		somme += analogRead(PRESSURE_SENSOR_PIN);
-		delay(2);
-	}
-
-	return somme / nombreEchantillons;
+	pinMode(PRESSURE_SENSOR_PIN, INPUT);
+	Setpoint = 1013.0; 
+	pressurePID.SetMode(AUTOMATIC);
+	pressurePID.SetOutputLimits(0, 255);
+    pressurePID.SetSampleTime(50); 
 }
 
 /**
- * @brief Simulate pressure with potentiometer 
- * @return Float : pressure level in hPa
+ * @brief Retrieve pressure from pressure sensor
+ * @return float : pressure level in hPa
  * @param None
 */
 float getPress()
 {
-    float valeurBrute = lireValeurBrutePression();
-    float press = (valeurBrute / 1023.0) * 1200.0;
+	int sensorValue = analogRead(PRESSURE_SENSOR_PIN);
+	Input = (sensorValue / 1023.0) * 1200; 
+	if (Input < 100 || Input > 1200)
+	{
+		errorPress = true;
+		return 0;
+	}
+	errorPress = false;
 
-    // Error checking
-    if (press < 300 || press > 1200)
-    {
-        errorPress = true;
-        return 0;
+	return Input;
+}
+
+/**
+ * @brief Control the pressure using a PID controller
+ * @return None
+ * @param None
+*/
+void pressureControl()
+{
+	Input = getPress();
+
+	if (!errorPress)
+	{
+		// --- LOGIQUE ADAPTATIVE (GAIN SCHEDULING) ---
+	double gap = abs(Setpoint - Input);
+
+		if (gap < 50) { 
+			pressurePID.SetTunings(consKp, consKi, consKd);
+		} else { 
+			pressurePID.SetTunings(aggKp, aggKi, aggKd);
+		}
+
+		// Calcul PID
+        if(pressurePID.Compute()) { 
+             analogWrite(BLUE_PIN, Output); 
+        }
+    } else {
+        analogWrite(BLUE_PIN, 0);    
     }
-
-    errorPress = false;
-    return press;
 }
 
 

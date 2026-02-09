@@ -26,6 +26,7 @@ void setup()
 	while (!Serial);
 	Serial.println("------------------------");
 	initBme280();
+	InitPression();
 	lcd.init();
 	lcd.noBacklight();
 	ErrorLEDsInit();
@@ -115,6 +116,10 @@ void loop()
 		connexionMQTT();
 	}
 	mqttClient.loop();
+
+	// PID 
+	pressureControl();
+
 	if (isMqttConnected && statusWiFi == WL_CONNECTED)
 	{
 		lcd.backlight();
@@ -132,6 +137,7 @@ void loop()
 		lcd.setCursor(14,0);
 		lcd.print("%H");
 
+		// Pressure
 		float press = getPress();
 		lcd.setCursor(0,1);
 		String printPress = String((int) press);
