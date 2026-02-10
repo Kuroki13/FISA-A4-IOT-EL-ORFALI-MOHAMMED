@@ -97,7 +97,7 @@ float getHum()
 // --- Variables de configuration ---
 // Alpha : 0.1 = Lissage fort (courbe très douce), 1.0 = Brut (très nerveux)
 const float FILTER_ALPHA = 0.1;
-float smoothedPressure = 1013.0; 
+float filteredPressure = 1013.0; 
 
 /**
  * @brief Initialize the pressure sensor
@@ -106,7 +106,7 @@ void InitPression()
 {
     pinMode(PRESSURE_SENSOR_PIN, INPUT);
     int raw = analogRead(PRESSURE_SENSOR_PIN);
-    smoothedPressure = (raw / 1023.0) * 1200.0;
+    filteredPressure = (raw / 1023.0) * 1200.0;
 }
 
 /**
@@ -122,15 +122,15 @@ float getPress()
     if (rawHPa < 900 || rawHPa > 1170)
     {
         errorPress = true;
-		smoothedPressure = (FILTER_ALPHA * rawHPa) + ((1.0 - FILTER_ALPHA) * smoothedPressure);
-		return smoothedPressure; 
+		filteredPressure = (FILTER_ALPHA * rawHPa) + ((1.0 - FILTER_ALPHA) * filteredPressure);
+		return filteredPressure; 
     }
     errorPress = false;
 
     // Formule : NouvelleMoyenne = (10% de la Nouveauté) + (90% de l'Historique)
-    smoothedPressure = (FILTER_ALPHA * rawHPa) + ((1.0 - FILTER_ALPHA) * smoothedPressure);
+    filteredPressure = (FILTER_ALPHA * rawHPa) + ((1.0 - FILTER_ALPHA) * filteredPressure);
 
-    return smoothedPressure;
+    return filteredPressure;
 }
 
 
