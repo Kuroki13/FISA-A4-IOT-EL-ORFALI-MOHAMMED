@@ -88,3 +88,4 @@ Le module transmet sa télémétrie toutes les 5 secondes sur le topic `iss/modu
     "wifi_rssi": -65,
     "alarm_active": false
   }
+}
