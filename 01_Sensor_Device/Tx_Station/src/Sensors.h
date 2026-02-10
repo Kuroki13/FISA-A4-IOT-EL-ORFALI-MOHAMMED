@@ -13,11 +13,7 @@ bool errorTempHum = false;
 bool errorPress   = false;
 bool errorAir     = false;
 
-// --- Variables de configuration ---
-// Alpha : 0.1 = Lissage fort (courbe très douce), 1.0 = Brut (très nerveux)
-const float FILTER_ALPHA = 0.1; 
-// --- Variables de lissage ---
-float smoothedPressure = 1013.25; // Valeur de référence (pression au niveau de la mer)
+
 
 
 
@@ -97,11 +93,20 @@ float getHum()
  * @return None
  * @param None
 */
+
+// --- Variables de configuration ---
+// Alpha : 0.1 = Lissage fort (courbe très douce), 1.0 = Brut (très nerveux)
+const float FILTER_ALPHA = 0.1;
+float smoothedPressure = 1013.0; 
+
+/**
+ * @brief Initialize the pressure sensor
+ */
 void InitPression()
 {
     pinMode(PRESSURE_SENSOR_PIN, INPUT);
     int raw = analogRead(PRESSURE_SENSOR_PIN);
-    float smoothedPressure = (raw / 1023.0) * 1200.0;
+    smoothedPressure = (raw / 1023.0) * 1200.0;
 }
 
 /**
@@ -110,25 +115,20 @@ void InitPression()
  */
 float getPress()
 {
-
-    analogRead(PRESSURE_SENSOR_PIN); 
-    delay(2); 
-
     int sensorValue = analogRead(PRESSURE_SENSOR_PIN);
     
     float rawHPa = (sensorValue / 1023.0) * 1200.0; 
 
-   
-    if (rawHPa < 50 || rawHPa > 1250)
+    if (rawHPa < 900 || rawHPa > 1170)
     {
         errorPress = true;
-        return smoothedPressure; 
+		smoothedPressure = (FILTER_ALPHA * rawHPa) + ((1.0 - FILTER_ALPHA) * smoothedPressure);
+		return smoothedPressure; 
     }
     errorPress = false;
 
     // Formule : NouvelleMoyenne = (10% de la Nouveauté) + (90% de l'Historique)
     smoothedPressure = (FILTER_ALPHA * rawHPa) + ((1.0 - FILTER_ALPHA) * smoothedPressure);
-
 
     return smoothedPressure;
 }
