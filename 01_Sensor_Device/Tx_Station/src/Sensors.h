@@ -13,6 +13,14 @@ bool errorTempHum = false;
 bool errorPress   = false;
 bool errorAir     = false;
 
+// --- Variables de configuration ---
+// Alpha : 0.1 = Lissage fort (courbe très douce), 1.0 = Brut (très nerveux)
+const float FILTER_ALPHA = 0.1; 
+// --- Variables de lissage ---
+float smoothedPressure = 1013.25; // Valeur de référence (pression au niveau de la mer)
+
+
+
 /**
  * @brief Inititalize the BME280 sensor 
  * @return None
@@ -84,18 +92,6 @@ float getHum()
 // PRESSURE SENSOR
 ///////////////////////////////////////////
 
-
-double Setpoint, Input, Output;
-
-// Tuning parameters for PID controller
-double Kp = 2.0, Ki = 5.0, Kd = 1.0;
-double aggKp=4, aggKi=0, aggKd=0;
-double consKp=1, consKi=0.05, consKd=0.25;
-
-PID pressurePID(&Input, &Output, &Setpoint, consKp, consKi, consKd, DIRECT);
-
-
-
 /**
  * @brief Inititalize the pressure sensor 
  * @return None
@@ -103,60 +99,41 @@ PID pressurePID(&Input, &Output, &Setpoint, consKp, consKi, consKd, DIRECT);
 */
 void InitPression()
 {
-	pinMode(PRESSURE_SENSOR_PIN, INPUT);
-	Setpoint = 1013.0; 
-	pressurePID.SetMode(AUTOMATIC);
-	pressurePID.SetOutputLimits(0, 255);
-    pressurePID.SetSampleTime(50); 
+    pinMode(PRESSURE_SENSOR_PIN, INPUT);
+    int raw = analogRead(PRESSURE_SENSOR_PIN);
+    float smoothedPressure = (raw / 1023.0) * 1200.0;
 }
 
 /**
- * @brief Retrieve pressure from pressure sensor
- * @return float : pressure level in hPa
- * @param None
-*/
+ * @brief Retrieve pressure with Anti-Ghosting & Exponential Smoothing
+ * @return float : Stable pressure level in hPa
+ */
 float getPress()
 {
-	int sensorValue = analogRead(PRESSURE_SENSOR_PIN);
-	Input = (sensorValue / 1023.0) * 1200; 
-	if (Input < 100 || Input > 1200)
-	{
-		errorPress = true;
-		return 0;
-	}
-	errorPress = false;
 
-	return Input;
-}
+    analogRead(PRESSURE_SENSOR_PIN); 
+    delay(2); 
 
-/**
- * @brief Control the pressure using a PID controller
- * @return None
- * @param None
-*/
-void pressureControl()
-{
-	Input = getPress();
+    int sensorValue = analogRead(PRESSURE_SENSOR_PIN);
+    
+    float rawHPa = (sensorValue / 1023.0) * 1200.0; 
 
-	if (!errorPress)
-	{
-		// --- LOGIQUE ADAPTATIVE (GAIN SCHEDULING) ---
-	double gap = abs(Setpoint - Input);
-
-		if (gap < 50) { 
-			pressurePID.SetTunings(consKp, consKi, consKd);
-		} else { 
-			pressurePID.SetTunings(aggKp, aggKi, aggKd);
-		}
-
-		// Calcul PID
-        if(pressurePID.Compute()) { 
-             analogWrite(BLUE_PIN, Output); 
-        }
-    } else {
-        analogWrite(BLUE_PIN, 0);    
+   
+    if (rawHPa < 50 || rawHPa > 1250)
+    {
+        errorPress = true;
+        return smoothedPressure; 
     }
+    errorPress = false;
+
+    // Formule : NouvelleMoyenne = (10% de la Nouveauté) + (90% de l'Historique)
+    smoothedPressure = (FILTER_ALPHA * rawHPa) + ((1.0 - FILTER_ALPHA) * smoothedPressure);
+
+
+    return smoothedPressure;
 }
+
+
 
 
 ///////////////////////////////////////////
@@ -172,6 +149,7 @@ float currentVoltage = 400;
  * @param None
 */
 float getAirQual() {
+
     float lastVoltage = currentVoltage;
     currentVoltage = analogRead(AIR_QUAL_SENSOR_PIN);
     float percentVoltage = (currentVoltage/1024) * 100;

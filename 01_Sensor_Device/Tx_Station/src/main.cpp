@@ -142,9 +142,6 @@ void loop()
 	}
 	mqttClient.loop();
 
-	// PID 
-	pressureControl();
-
 	if (isMqttConnected && statusWiFi == WL_CONNECTED)
 	{
 		lcd.backlight();
@@ -167,6 +164,7 @@ void loop()
 		lcd.setCursor(0,1);
 		String printPress = String((int) press);
 		while (printPress.length() < 4) printPress = " " + printPress;
+		if (press == 0) printPress = "Err ";
 		lcd.print(printPress);
 		lcd.setCursor(4,1);
 		lcd.print("hPa");
