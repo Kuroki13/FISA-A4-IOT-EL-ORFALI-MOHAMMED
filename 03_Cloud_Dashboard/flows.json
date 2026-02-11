@@ -1,0 +1,535 @@
+[
+    {
+        "id": "821ed53125562099",
+        "type": "tab",
+        "label": "GRAPHIQUES",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c7015096d238237f",
+        "type": "group",
+        "z": "821ed53125562099",
+        "name": "GRAPHIQUE SALLE 1",
+        "style": {
+            "stroke": "#000000",
+            "fill": "#d1d1d1",
+            "label": true,
+            "color": "#000000"
+        },
+        "nodes": [
+            "ec4d7a4e82cce2f2",
+            "88a6b0668f27c40c",
+            "658985ec2a1d724f",
+            "656f1342826a0567",
+            "46b9011460992d86",
+            "f8d7d4595bd604d4",
+            "945a7696eff37191"
+        ],
+        "x": 284,
+        "y": 119,
+        "w": 362,
+        "h": 242
+    },
+    {
+        "id": "ff5a71253d86a9fc",
+        "type": "group",
+        "z": "821ed53125562099",
+        "name": "GRAPHIQUE SALLE 2",
+        "style": {
+            "stroke": "#000000",
+            "fill": "#d1d1d1",
+            "label": true,
+            "color": "#000000"
+        },
+        "nodes": [
+            "a99c48b99d43ab18",
+            "d0fe68ddd26dd6e3",
+            "56f78e8d9c6ec4f1",
+            "985e402504bb9aec",
+            "041b6909e237532a",
+            "f6822eab9ddd702f",
+            "addb749fc554816b"
+        ],
+        "x": 294,
+        "y": 419,
+        "w": 352,
+        "h": 242
+    },
+    {
+        "id": "ec4d7a4e82cce2f2",
+        "type": "inject",
+        "z": "821ed53125562099",
+        "g": "c7015096d238237f",
+        "name": "RESET",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 410,
+        "y": 160,
+        "wires": [
+            [
+                "88a6b0668f27c40c"
+            ]
+        ]
+    },
+    {
+        "id": "88a6b0668f27c40c",
+        "type": "function",
+        "z": "821ed53125562099",
+        "g": "c7015096d238237f",
+        "name": "RESET",
+        "func": "msg.payload = [];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 160,
+        "wires": [
+            [
+                "658985ec2a1d724f"
+            ]
+        ]
+    },
+    {
+        "id": "a99c48b99d43ab18",
+        "type": "inject",
+        "z": "821ed53125562099",
+        "g": "ff5a71253d86a9fc",
+        "name": "RESET",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 410,
+        "y": 460,
+        "wires": [
+            [
+                "d0fe68ddd26dd6e3"
+            ]
+        ]
+    },
+    {
+        "id": "d0fe68ddd26dd6e3",
+        "type": "function",
+        "z": "821ed53125562099",
+        "g": "ff5a71253d86a9fc",
+        "name": "RESET",
+        "func": "msg.payload = [];\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 460,
+        "wires": [
+            [
+                "56f78e8d9c6ec4f1"
+            ]
+        ]
+    },
+    {
+        "id": "656f1342826a0567",
+        "type": "link in",
+        "z": "821ed53125562099",
+        "g": "c7015096d238237f",
+        "name": "TEMPERATURE_IN_1",
+        "links": [
+            "70e6d7fb61b12982"
+        ],
+        "x": 325,
+        "y": 200,
+        "wires": [
+            [
+                "658985ec2a1d724f"
+            ]
+        ]
+    },
+    {
+        "id": "985e402504bb9aec",
+        "type": "link in",
+        "z": "821ed53125562099",
+        "g": "ff5a71253d86a9fc",
+        "name": "TEMPERATURE_IN_2",
+        "links": [
+            "8f045b02889b9fc6"
+        ],
+        "x": 335,
+        "y": 500,
+        "wires": [
+            [
+                "56f78e8d9c6ec4f1"
+            ]
+        ]
+    },
+    {
+        "id": "46b9011460992d86",
+        "type": "link in",
+        "z": "821ed53125562099",
+        "g": "c7015096d238237f",
+        "name": "HUMIDITE_IN_1",
+        "links": [
+            "e72d4f293bb63cba"
+        ],
+        "x": 325,
+        "y": 240,
+        "wires": [
+            [
+                "658985ec2a1d724f"
+            ]
+        ]
+    },
+    {
+        "id": "f8d7d4595bd604d4",
+        "type": "link in",
+        "z": "821ed53125562099",
+        "g": "c7015096d238237f",
+        "name": "QUALITE_AIR_IN_1",
+        "links": [
+            "73cb6e2756c70c57"
+        ],
+        "x": 325,
+        "y": 320,
+        "wires": [
+            [
+                "658985ec2a1d724f"
+            ]
+        ]
+    },
+    {
+        "id": "041b6909e237532a",
+        "type": "link in",
+        "z": "821ed53125562099",
+        "g": "ff5a71253d86a9fc",
+        "name": "HUMIDITE_IN_2",
+        "links": [
+            "a2cac69b09576b09"
+        ],
+        "x": 335,
+        "y": 540,
+        "wires": [
+            [
+                "56f78e8d9c6ec4f1"
+            ]
+        ]
+    },
+    {
+        "id": "f6822eab9ddd702f",
+        "type": "link in",
+        "z": "821ed53125562099",
+        "g": "ff5a71253d86a9fc",
+        "name": "QUALITE_AIR_IN_1",
+        "links": [
+            "dac2e025ab61dbf5"
+        ],
+        "x": 335,
+        "y": 620,
+        "wires": [
+            [
+                "56f78e8d9c6ec4f1"
+            ]
+        ]
+    },
+    {
+        "id": "945a7696eff37191",
+        "type": "link in",
+        "z": "821ed53125562099",
+        "g": "c7015096d238237f",
+        "name": "PRESSION_IN_1",
+        "links": [
+            "3dade336b702d485"
+        ],
+        "x": 325,
+        "y": 280,
+        "wires": [
+            [
+                "658985ec2a1d724f"
+            ]
+        ]
+    },
+    {
+        "id": "addb749fc554816b",
+        "type": "link in",
+        "z": "821ed53125562099",
+        "g": "ff5a71253d86a9fc",
+        "name": "PRESSION_IN_2",
+        "links": [
+            "fad2614e835a4c31"
+        ],
+        "x": 335,
+        "y": 580,
+        "wires": [
+            [
+                "56f78e8d9c6ec4f1"
+            ]
+        ]
+    },
+    {
+        "id": "658985ec2a1d724f",
+        "type": "ui-chart",
+        "z": "821ed53125562099",
+        "g": "c7015096d238237f",
+        "group": "d1c483375cfa1844",
+        "name": "Graphiques_SALLE_1",
+        "label": "",
+        "order": 2,
+        "chartType": "line",
+        "category": "topic",
+        "categoryType": "msg",
+        "xAxisLabel": "",
+        "xAxisProperty": "",
+        "xAxisPropertyType": "timestamp",
+        "xAxisType": "time",
+        "xAxisFormat": "",
+        "xAxisFormatType": "auto",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "",
+        "yAxisProperty": "payload.data",
+        "yAxisPropertyType": "msg",
+        "ymin": "",
+        "ymax": "",
+        "bins": 10,
+        "action": "append",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": 1,
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "",
+        "colors": [
+            "#ff0000",
+            "#00c8ff",
+            "#00ff00",
+            "#ff00ff",
+            "#a347e1",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#ff0000"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#ff0000"
+        ],
+        "gridColorDefault": true,
+        "width": 6,
+        "height": 7,
+        "className": "",
+        "interpolation": "linear",
+        "x": 520,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "56f78e8d9c6ec4f1",
+        "type": "ui-chart",
+        "z": "821ed53125562099",
+        "g": "ff5a71253d86a9fc",
+        "group": "788a01256dab4cd0",
+        "name": "Graphiques_SALLE_2",
+        "label": "",
+        "order": 2,
+        "chartType": "line",
+        "category": "topic",
+        "categoryType": "msg",
+        "xAxisLabel": "",
+        "xAxisProperty": "",
+        "xAxisPropertyType": "timestamp",
+        "xAxisType": "time",
+        "xAxisFormat": "",
+        "xAxisFormatType": "auto",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "",
+        "yAxisProperty": "payload.data",
+        "yAxisPropertyType": "msg",
+        "ymin": "",
+        "ymax": "",
+        "bins": 10,
+        "action": "append",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": 1,
+        "removeOlderUnit": "3600",
+        "removeOlderPoints": "",
+        "colors": [
+            "#ff0000",
+            "#00c8ff",
+            "#00ff00",
+            "#ff00ff",
+            "#a347e1",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#ff0000"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#ff0000"
+        ],
+        "gridColorDefault": true,
+        "width": 6,
+        "height": 7,
+        "className": "",
+        "interpolation": "linear",
+        "x": 520,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d1c483375cfa1844",
+        "type": "ui-group",
+        "name": "Graphiques SALLE 1",
+        "page": "12ed5054cf075195",
+        "width": 5,
+        "height": 1,
+        "order": 2,
+        "showTitle": false,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "788a01256dab4cd0",
+        "type": "ui-group",
+        "name": "Graphiques SALLE 2",
+        "page": "12ed5054cf075195",
+        "width": 5,
+        "height": 1,
+        "order": 3,
+        "showTitle": false,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "12ed5054cf075195",
+        "type": "ui-page",
+        "name": "Graphiques",
+        "ui": "966c624c504785b0",
+        "path": "/graphiques",
+        "icon": "function",
+        "layout": "grid",
+        "theme": "948d57890ccbeab0",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 6,
+        "className": "",
+        "visible": "true",
+        "disabled": false
+    },
+    {
+        "id": "966c624c504785b0",
+        "type": "ui-base",
+        "name": "My Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": false
+    },
+    {
+        "id": "948d57890ccbeab0",
+        "type": "ui-theme",
+        "name": "Dark",
+        "colors": {
+            "surface": "#474747",
+            "primary": "#d10000",
+            "bgPage": "#696969",
+            "groupBg": "#b3b3b3",
+            "groupOutline": "#ffffff"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    },
+    {
+        "id": "40e99480a1e94bfc",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.30.1"
+        }
+    }
+]
