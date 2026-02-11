@@ -83,6 +83,53 @@ float getHum()
 // PRESSURE SENSOR
 ///////////////////////////////////////////
 
+
+// /**
+//  * @brief Inititalize the pressure sensor 
+//  * @return None
+//  * @param None
+// */
+
+// // --- Variables de configuration ---
+// // Alpha : 0.1 = Lissage fort (courbe très douce), 1.0 = Brut (très nerveux)
+// const float FILTER_ALPHA = 0.1;
+// float filteredPressure = 1013.0; 
+
+// /**
+//  * @brief Initialize the pressure sensor
+//  */
+// void InitPression()
+// {
+//     pinMode(PRESSURE_SENSOR_PIN, INPUT);
+//     int raw = analogRead(PRESSURE_SENSOR_PIN);
+//     filteredPressure = (raw / 1023.0) * 1200.0;
+// }
+
+// /**
+//  * @brief Retrieve pressure with Anti-Ghosting & Exponential Smoothing
+//  * @return float : Stable pressure level in hPa
+//  */
+// float getPress()
+// {
+//     int sensorValue = analogRead(PRESSURE_SENSOR_PIN);
+    
+//     float rawHPa = (sensorValue / 1023.0) * 1200.0; 
+
+//     if (rawHPa < 900 || rawHPa > 1170)
+//     {
+//         errorPress = true;
+// 		filteredPressure = (FILTER_ALPHA * rawHPa) + ((1.0 - FILTER_ALPHA) * filteredPressure);
+// 		return filteredPressure; 
+//     }
+//     errorPress = false;
+
+//     // Formule : NouvelleMoyenne = (10% de la Nouveauté) + (90% de l'Historique)
+//     filteredPressure = (FILTER_ALPHA * rawHPa) + ((1.0 - FILTER_ALPHA) * filteredPressure);
+
+//     return filteredPressure;
+// }
+
+
 /**
  * @brief Calculate 
  * @return Int : 
@@ -110,10 +157,10 @@ int lireValeurBrutePression()
 float getPress()
 {
     float valeurBrute = lireValeurBrutePression();
-    float press = (valeurBrute / 1023.0) * 1200.0;
+    float press = (valeurBrute / 1024.0) * 1200.0;
 
     // Error checking
-    if (press < 300 || press > 1200)
+    if (press < 900 || press > 1170)
     {
         errorPress = true;
         return 0;
@@ -127,6 +174,47 @@ float getPress()
 ///////////////////////////////////////////
 // AIR QUALITY SENSOR
 ///////////////////////////////////////////
+
+// const float FILTER_ALPHA_AIR = 0.05; 
+// float filteredAirQuality = 0.0; 
+// const float standardVoltage = 100;
+// float currentVoltage = 400;
+
+// /**
+//  * @brief Initialize the air quality sensor
+//  */
+// void InitAirQual()
+// {
+//     analogRead(AIR_QUAL_SENSOR_PIN); 
+//     delay(2);
+//     filteredAirQuality = analogRead(AIR_QUAL_SENSOR_PIN);
+// }
+
+// /**
+//  * @brief Retrieve air quality from air quality sensor
+//  * @return Float : air quality level in %
+//  * @param None
+// */
+// float getAirQual() {
+
+//     currentVoltage = analogRead(AIR_QUAL_SENSOR_PIN);
+    
+
+
+//     // Error checking
+//     if (currentVoltage < 0 || currentVoltage > 1023)
+//     {
+//         errorAir = true;
+//         return filteredAirQuality;
+//     }
+
+//     errorAir = false;	
+// 	filteredAirQuality = (FILTER_ALPHA_AIR * currentVoltage) + ((1.0 - FILTER_ALPHA_AIR) * filteredAirQuality);
+
+// 	float percentVoltage = (filteredAirQuality/1024) * 100;
+
+//     return filteredAirQuality;
+// }
 
 const float standardVoltage = 100;
 float currentVoltage = 400;
