@@ -28,6 +28,7 @@ void setup()
 	Serial.println("------------------------");
 	initBme280();
 	InitPression();
+	InitAirQual();
 	lcd.init();
 	lcd.noBacklight();
 	ErrorLEDsInit();

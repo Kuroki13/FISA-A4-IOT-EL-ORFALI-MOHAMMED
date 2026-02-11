@@ -140,8 +140,20 @@ float getPress()
 // AIR QUALITY SENSOR
 ///////////////////////////////////////////
 
+const float FILTER_ALPHA_AIR = 0.05; 
+float filteredAirQuality = 0.0; 
 const float standardVoltage = 100;
 float currentVoltage = 400;
+
+/**
+ * @brief Initialize the air quality sensor
+ */
+void InitAirQual()
+{
+    analogRead(AIR_QUAL_SENSOR_PIN); 
+    delay(2);
+    filteredAirQuality = analogRead(AIR_QUAL_SENSOR_PIN);
+}
 
 /**
  * @brief Retrieve air quality from air quality sensor
@@ -150,35 +162,23 @@ float currentVoltage = 400;
 */
 float getAirQual() {
 
-    float lastVoltage = currentVoltage;
     currentVoltage = analogRead(AIR_QUAL_SENSOR_PIN);
-    float percentVoltage = (currentVoltage/1024) * 100;
+    
 
-    Serial.print("Actual air quality (%): ");
-    Serial.print(percentVoltage);
-
-    if (currentVoltage - lastVoltage > 400 || currentVoltage > 700) {
-        Serial.println(". High pollution! Force signal active.");
-    }
-    else if ((currentVoltage - lastVoltage > 400 && currentVoltage < 700) || currentVoltage - standardVoltage > 150) {
-        Serial.println(". High pollution!");
-    }
-    else if (( currentVoltage - lastVoltage > 200 && currentVoltage < 700) || currentVoltage - standardVoltage > 50) {
-        Serial.println(". Low pollution!");
-    }
-    else {
-        Serial.println(". Fresh air.");
-    }
 
     // Error checking
     if (currentVoltage < 0 || currentVoltage > 1023)
     {
         errorAir = true;
-        return 0;
+        return filteredAirQuality;
     }
 
-    errorAir = false;
-    return currentVoltage;
+    errorAir = false;	
+	filteredAirQuality = (FILTER_ALPHA_AIR * currentVoltage) + ((1.0 - FILTER_ALPHA_AIR) * filteredAirQuality);
+
+	float percentVoltage = (filteredAirQuality/1024) * 100;
+
+    return filteredAirQuality;
 }
 
 
