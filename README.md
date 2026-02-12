@@ -11,14 +11,14 @@
 
 ---
 
-##  L'Équipe (Flight Crew & Ground Control)
+##  L'Équipe
 
 | Membre | Rôle Technique | Responsabilités Mission |
 | :--- | :--- | :--- |
 | **Mohammed EL ORFALI** | Dev. Embarqué | Développement Firmware Capteur & Algorithmes de survie (Safety) |
 | **Axel DELAR** | Ingénieur Radio | Protocoles de transmission & Validation Couverture Wi-Fi/4G |
-| **Remy MOREEL** | Architecte Réseau | Architecture du *Flight Computer* (Gateway) & Gestion flux de données |
-| **Léo SCHAEFFER** | Intégrateur Cloud | Développement du *Mission Control* (Dashboard) & Stockage |
+| **Remy MOREEL** | Architecte Réseau | Architecture du (Gateway) & Gestion flux de données |
+| **Léo SCHAEFFER** | Intégrateur Cloud | Développement du (Dashboard) & Stockage |
 
 ---
 
@@ -31,10 +31,9 @@
 Dans une station spatiale (ISS), l'air est une ressource critique. Une augmentation du CO2 ou une baisse de pression n'est pas un simple inconfort, c'est une question de survie immédiate. Les délais de communication avec la Terre interdisent une gestion de crise 100% Cloud.
 
 **Notre approche : Le "Module Pressurisé Autonome"**
-Nous utilisons une salle de classe comme **environnement analogue** (volume clos, présence humaine, génération de CO2) pour qualifier un système capable de :
+Nous utilisons une salle de classe comme **environnement analogue** (volume clos, génération de CO2) pour qualifier un système capable de :
 
 1.  **Survie (Edge Computing) :** Le module gère sa propre sécurité. Si le CO2 dépasse le seuil critique, l'alarme sonne **localement** et **instantanément**, sans attendre Internet.
-2.  **Résilience (Store & Forward) :** En cas de perte de signal (LOS - Loss of Signal) avec le Cloud, les données sont stockées dans la Gateway et retransmises au rétablissement de la liaison.
 
 ---
 
@@ -53,40 +52,55 @@ Le "Nez" du système. Il est autonome énergétiquement et décisionnellement.
 * **Sécurité :** Algorithme réflexe `IF CO2 > 1200ppm THEN Trigger_Alarm()`.
 * **Protocole :** MQTT sur Wi-Fi local.
 
-### 2. Zone Middleware (Flight Computer)
+### 2. Zone Middleware
 Le cerveau local du module.
 * **Hardware :** PC Hôte.
 * **Rôle Gateway :** Héberge le Broker MQTT (Mosquitto) et le moteur de flux (Node-RED).
-* **Fonction Store & Forward :**
-    * *Status OK :* Passthrough vers le Cloud.
-    * *Status LOS (Coupure) :* Mise en mémoire tampon (Buffer local).
 
-### 3. Zone Application (Mission Control)
+### 3. Zone Application
 La supervision distante pour les ingénieurs au sol.
-* **Interface :** Dashboard Node-RED / Grafana.
+* **Interface :** Dashboard Node-RED.
 * **Données :** Télémétrie temps réel + Historique des incidents.
 
 ---
 
-## Interface de Données (API)
+## Interface de Données
 
-Le module transmet sa télémétrie toutes les 5 secondes sur le topic `iss/module_1/eclss/telemetry`.
+Le module transmet sa télémétrie toutes les 5 secondes sur le topic `eclss/télémetrie`.
 
 **Format du Payload JSON :**
 ```json
 {
-  "device_id": "sensor_unit_alpha",
-  "timestamp": 1705421200,
-  "telemetry": {
-    "co2_ppm": 1150,
-    "temperature_c": 21.5,
-    "humidity_pct": 45.0,
-    "door_status": "CLOSED"
-  },
-  "system_status": {
-    "battery_level": 85,
-    "wifi_rssi": -65,
-    "alarm_active": false
-  }
+        "id": "821ed53125562099",
+        "type": "tab",
+        "label": "GRAPHIQUES",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c7015096d238237f",
+        "type": "group",
+        "z": "821ed53125562099",
+        "name": "GRAPHIQUE SALLE 1",
+        "style": {
+            "stroke": "#000000",
+            "fill": "#d1d1d1",
+            "label": true,
+            "color": "#000000"
+        },
+        "nodes": [
+            "ec4d7a4e82cce2f2",
+            "88a6b0668f27c40c",
+            "658985ec2a1d724f",
+            "656f1342826a0567",
+            "46b9011460992d86",
+            "f8d7d4595bd604d4",
+            "945a7696eff37191"
+        ],
+        "x": 284,
+        "y": 119,
+        "w": 362,
+        "h": 242
+    }
 }
-```
