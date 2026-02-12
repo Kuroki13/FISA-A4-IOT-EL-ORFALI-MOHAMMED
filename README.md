@@ -43,7 +43,7 @@ Le système suit une architecture IoT en couches stricte, adaptée aux contraint
 
 <img width="4015" height="1878" alt="image" src="https://github.com/user-attachments/assets/94f7f5d5-38d6-4a26-8277-12e3b0061e2c" />
 
-### 1. Zone de Perception (Smart Sensor)
+### 1. Zone de Perception
 Le "Nez" du système. Il est autonome énergétiquement et décisionnellement.
 * **Hardware :** Arduino (Avec ESP32) sur secteur & Powerbank (Simulation Batterie Secours).
 * **Capteurs Critique :**
