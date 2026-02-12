@@ -163,8 +163,14 @@ float getPress()
     if (press < 900 || press > 1170)
     {
         errorPress = true;
-        return 0;
+        return press;
     }
+
+	if (press <= 100)
+	{
+		errorPress = true;
+		return 0;
+	}
 
     errorPress = false;
     return press;
