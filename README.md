@@ -89,3 +89,4 @@ Le module transmet sa télémétrie toutes les 5 secondes sur le topic `iss/modu
     "alarm_active": false
   }
 }
+```
