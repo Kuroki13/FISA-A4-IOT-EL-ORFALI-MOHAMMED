@@ -1,0 +1,51 @@
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  authority:
+    build:
+      context: .
+      dockerfile: authority/Dockerfile
+    environment:
+      MONGO_URL: mongodb://mongo:27017
+      CHAIN_DB: iot_chain
+      AUTHORITY_ID: poa-1
+      BLOCK_INTERVAL_MS: 60000
+      MAX_TX_PER_BLOCK: 200
+
+      AUTHORITY_PRIV_PATH: /keys/authority_private.pem
+      AUTHORITY_PUB_PATH: /keys/authority_public.pem
+
+      SKIP_SIG_CHECK: "true"
+    volumes:
+      - ./keys:/keys:ro
+    depends_on:
+      - mongo
+
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+    volumes:
+      - mosquitto_data:/mosquitto/data
+
+  nodered:
+    image: nodered/node-red:latest
+    ports:
+      - "1880:1880"
+    environment:
+      - TZ=Europe/Paris
+    volumes:
+      - nodered_data:/data
+    depends_on:
+      - mongo
+      - mosquitto
+
+volumes:
+  mongo_data:
+  nodered_data:
+  mosquitto_data:
