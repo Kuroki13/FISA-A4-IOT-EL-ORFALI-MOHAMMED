@@ -1,23 +1,27 @@
 const crypto = require("crypto");
 
 class Data {
-    constructor({ deviceId, timestamp, payload, publicKeyPem, signatureB64 }) {
+    constructor({ deviceId, timestamp, topic, data, hmac, publicKeyPem, signatureB64 }) {
         this.deviceId = deviceId;
         this.timestamp = timestamp;
-        this.payload = payload;
-        this.publicKeyPem = publicKeyPem;     // PEM (optionnel si SKIP_SIG_CHECK=true)
-        this.signatureB64 = signatureB64;     // base64 (optionnel si SKIP_SIG_CHECK=true)
+        this.topic = topic;
+        this.data = data;
+        this.hmac = hmac;
+        this.publicKeyPem = publicKeyPem;
+        this.signatureB64 = signatureB64;
     }
 
     signingMessage() {
-        return `${this.deviceId}|${this.timestamp}|${JSON.stringify(this.payload)}`;
+        return `id=${this.deviceId}&data=${this.data}`;
     }
 
     toPlain() {
         return {
             deviceId: this.deviceId,
             timestamp: this.timestamp,
-            payload: this.payload,
+            topic: this.topic,
+            data: this.data,
+            hmac: this.hmac,
             publicKeyPem: this.publicKeyPem,
             signatureB64: this.signatureB64,
         };

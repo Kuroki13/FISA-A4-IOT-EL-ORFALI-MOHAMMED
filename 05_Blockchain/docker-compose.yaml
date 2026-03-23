@@ -15,12 +15,15 @@ services:
       CHAIN_DB: iot_chain
       AUTHORITY_ID: poa-1
       BLOCK_INTERVAL_MS: 60000
-      MAX_TX_PER_BLOCK: 200
+      MAX_TX_PER_BLOCK: 500
 
       AUTHORITY_PRIV_PATH: /keys/authority_private.pem
       AUTHORITY_PUB_PATH: /keys/authority_public.pem
 
-      SKIP_SIG_CHECK: "true"
+      MQTT_URL: mqtt://192.168.0.102:1883
+      MQTT_TOPICS: eclss/temperature,eclss/humidite,eclss/pression,eclss/airquality
+
+      HMAC_KEY: "HGL51xcaM7q43f3dq84fqDQF2ds54f3f43"
     volumes:
       - ./keys:/keys:ro
     depends_on:
@@ -35,17 +38,19 @@ services:
 
   nodered:
     image: nodered/node-red:latest
+    hostname: nodered
+    build:
+      context: ../03_Cloud_Dashboard
     ports:
       - "1880:1880"
     environment:
-      - TZ=Europe/Paris
+      - FLOWS=flows.json
     volumes:
-      - nodered_data:/data
+      - ../03_Cloud_Dashboard/flows.json:/data/flows.json
     depends_on:
       - mongo
       - mosquitto
 
 volumes:
   mongo_data:
-  nodered_data:
   mosquitto_data:
